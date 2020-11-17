@@ -6,7 +6,12 @@ double TECmapSpher(std::vector<IFileData>& iFileData, DateTime time, std::array<
 
     if (lat > 87.5 || lat < -87.5) return 9999;
 
-    double iSec, timeSec = time.getUTCTime();
+    if(iFileData.size()==0) return 9999;
+
+    double iSec = iFileData[0].moment.getUTCTime(), timeSec = time.getUTCTime();
+
+    if(timeSec < iSec) return 9999;
+
     std::size_t i,j,k;
 
     for ( i = 0; i < iFileData.size(); i++ ) {
@@ -23,7 +28,6 @@ double TECmapSpher(std::vector<IFileData>& iFileData, DateTime time, std::array<
     for ( k = 0; k < 73; k++ ) {
         if (lon < iFileData[i].lon[k]) break;
     }
-
 
     if (iFileData[i - 1].values[j - 1][k - 1] == 9999 ||
         iFileData[i - 1].values[j - 1][k    ] == 9999 ||
@@ -79,3 +83,11 @@ double IPPTEC(std::vector<IFileData>& iFileData, DateTime time, std::array<doubl
 
     return TECmapDec(iFileData, time, point2);
 }
+
+std::vector<TECvalG> TEC(std::vector<GSatsParams>& satParamsData, std::array<double, 3>& pointPos){
+    return _TEC<TECvalG>(satParamsData, pointPos);
+};
+
+std::vector<TECvalR> TEC(std::vector<RSatsParams>& satParamsData,std::array<double, 3>& pointPos){
+    return _TEC<TECvalR>(satParamsData, pointPos);
+};
